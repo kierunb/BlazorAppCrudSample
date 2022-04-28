@@ -32,5 +32,30 @@ namespace BlazorAppCrudDorota.Server.Controllers
                 .ToListAsync());
                 
         }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await _northwindContext
+                .Orders
+                .Where(x => x.OrderId == id)
+                .ProjectTo<OrderView>(_mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync());
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody]OrderView orderView)
+        {
+
+            var order = _mapper.Map<Orders>(orderView);
+
+            _northwindContext.Attach(order);
+            _northwindContext.Entry(order).State = EntityState.Modified;
+            
+            await _northwindContext.SaveChangesAsync();
+            
+            return Ok();
+        }
     }
 }

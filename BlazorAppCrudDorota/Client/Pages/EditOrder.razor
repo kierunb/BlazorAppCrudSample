@@ -1,0 +1,46 @@
+﻿@page "/edit-order/{id:int}"
+@inject HttpClient http;
+@using BlazorAppCrudDorota.Shared.ViewModels
+<h3>EditOrder</h3>
+
+<p>
+    OrderId: @id
+</p>
+
+
+<EditForm Model="@orderView" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="ShipName" @bind-Value="orderView.ShipName" />
+    <InputText id="ShipCity" @bind-Value="orderView.ShipCity" />
+    <InputText id="ShipCountry" @bind-Value="orderView.ShipCountry" />
+    <InputText id="ShipRegion" @bind-Value="orderView.ShipRegion" />
+
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+
+@code {
+
+    private OrderView orderView = new(); 
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        orderView = await http.GetFromJsonAsync<OrderView>($"/api/orders/{id}");
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        Console.WriteLine($"Submit: {orderView.ShipName}" );
+
+        await http.PostAsJsonAsync("/api/orders", orderView);
+
+
+    }
+
+}

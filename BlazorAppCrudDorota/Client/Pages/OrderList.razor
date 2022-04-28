@@ -1,0 +1,36 @@
+﻿@page "/order-list"
+@inject HttpClient http
+@using BlazorAppCrudDorota.Shared.ViewModels
+
+<h3>OrderList</h3>
+
+<ul>
+    @if (orderViews == null)
+    {
+        <text>Loading...</text>
+    }
+    else
+    {
+       foreach (var order in orderViews)
+       {
+            <li> 
+                <a 
+                    class="btn btn-outline-primary" 
+                    href="/edit-order/@order.OrderId">@order.ShipName
+                </a>
+            </li>    
+       }
+    }
+</ul>
+
+
+@code {
+    private IEnumerable<OrderView> orderViews;
+
+    // przy ładowaniu strony
+    protected override async Task OnInitializedAsync()
+    {
+        orderViews = await http.GetFromJsonAsync<IEnumerable<OrderView>>("/api/orders");
+    }
+
+}
